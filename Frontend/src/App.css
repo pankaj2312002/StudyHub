@@ -1,0 +1,8 @@
+
+.signup-page {
+  background-image: url('../public//Images//signin.58ee1d5a.svg');
+  background-size: cover; /* or 'contain' */
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh; /* Full height */
+}
