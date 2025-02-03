@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 
 
 const axiosInstance = axios.create({
-  baseURL: 'https://study-hub-backend-beta.vercel.app//api/v1/', 
+  baseURL: 'https://study-hub-backend-beta.vercel.app/api/v1/', //backend ka baseurl
   withCredentials: true,
 });
 
