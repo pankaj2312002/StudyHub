@@ -59,7 +59,7 @@ function Searchcontainer() {
           <form className="w-full" onSubmit={handleSubmit}>
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search by subject or publisher..."
               className="p-5 pl-10 w-full h-12 sm:h-14 border border-gray-300 rounded-xl text-base sm:text-xl focus:outline-none"
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}

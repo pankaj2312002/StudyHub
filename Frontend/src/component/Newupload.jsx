@@ -8,7 +8,7 @@ import { fetchNotes } from '../redux/Slices/Notesslice';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast'; 
-const MAX_FILE_SIZE = 50 * 1024 * 1024; 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; 
 
 const UploadNotes = () => {
   const dispatch = useDispatch();
@@ -52,8 +52,9 @@ const UploadNotes = () => {
       setErrorMsg('Please fill in all the fields.');
       return false;
     }
-    if (file.size > MAX_FILE_SIZE) {
-      setErrorMsg('File size should be less than 5MB.');
+    if ( file.size > MAX_FILE_SIZE) {
+      
+      setErrorMsg('File size should be less than 10MB.');
       return false;
     }
     const validFileTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
@@ -111,7 +112,7 @@ const UploadNotes = () => {
       <div className="p-8 sm:p-10 rounded-xl shadow-lg w-full max-w-2xl bg-white">
         <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">Upload Your Notes</h2>
 
-        {errorMsg && <p className="text-red-500 mb-4">{errorMsg}</p>}
+        {errorMsg && <p className="text-red-500 mb-4 text-center">{errorMsg}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Subject Name */}

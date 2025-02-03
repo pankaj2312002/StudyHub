@@ -138,5 +138,3 @@ console.log("user =>", user)
 }
 
 export default Navbar;
-
-
