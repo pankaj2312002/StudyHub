@@ -3,42 +3,10 @@ const NoteModel = require('../models/notes');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 require('dotenv').config();
 const {sendOtpEmail} = require('../utilityFiles/emailFunction')
 
-// Utility function to send OTP via email
-// const sendOtpEmail = async (email, otp) => {
-//   try {
-//     const transporter = nodemailer.createTransport({
-//       host: process.env.MAIL_HOST,
-//       service: 'Gmail',
-//       auth: {
-//         user: process.env.MAIL_USER,
-//         pass: process.env.MAIL_PASS,
-//       },
-//     });
 
-//     const mailOptions = {
-//       from: process.env.MAIL_USER,
-//       to: email,
-//       subject: '🔒 Your OTP Verification Code',
-//       html: `
-//         <div style="text-align: center; font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #f9f9f9;">
-//           <h2 style="color: #333;">OTP Verification</h2>
-//           <p>Your OTP code is:</p>
-//           <div style="font-size: 24px; font-weight: bold; color: #007bff;">${otp}</div>
-//           <p>This code is valid for <strong>1 Minute</strong>.</p>
-//         </div>
-//       `,
-//     };
-//     await transporter.sendMail(mailOptions);
-    
-//   } catch (err) {
-    
-//     throw new Error('OTP sending failed');
-//   }
-// };
 
 // Utility function to find a user and handle common cases
 const findUser = async (email) => {
@@ -128,9 +96,9 @@ exports.verifyOtp = async (req, res) => {
     await user.save();
 
     const { password, ...userData } = user.toObject();
-    const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: '15d' });
 
-    res.cookie('token', token, { httpOnly: true, maxAge: 3600000 })
+    res.cookie('token', token, { httpOnly: true, maxAge: 15 * 24 * 60 * 60 * 1000  })
       .status(200).json({ success: true, message: 'OTP verified, account activated', User: userData });
   } catch (err) {
     console.error('OTP verification failed:', err.message);
@@ -141,7 +109,7 @@ exports.verifyOtp = async (req, res) => {
 // Resend OTP
 exports.resendOtp = async (req, res) => {
   const { email } = req.body;
-  console.log(`Resend OTP request for: ${email}`);
+  
   try {
     const user = await findUser(email);
     if (!user) {
@@ -171,7 +139,7 @@ exports.resendOtp = async (req, res) => {
 // Log in user
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  console.log(`Login attempt for: ${email}`);
+  
   try {
     const user = await findUser(email);
     if (!user || user.status !== 'verified') {
@@ -184,17 +152,25 @@ exports.login = async (req, res) => {
     }
 
     const { password: _, ...userData } = user.toObject();
-    const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: '15d' });
 
     const notes = await NoteModel.find({ uploadedBy: user._id });
     userData.notes = notes;
 
-    res.cookie('token', token, { httpOnly: true, maxAge: 3600000 })
-      .status(200).json({ 
-        success: true, 
-        message: 'Login successful',
-        User: userData
-       });
+    res.cookie('token', token, { 
+      httpOnly: true, 
+      maxAge: 15 * 24 * 60 * 60 * 1000,
+      sameSite: 'None', 
+      secure: process.env.NODE_ENV === 'production' ,
+      path: '/'
+    })
+    .status(200).json({ 
+      success: true, 
+      message: 'Login successful',
+      User: userData
+    });
+    
+    
   } catch (err) {
     console.error('Login error:', err.message);
     res.status(500).json({ success: false, message: 'Login failed' });
@@ -203,6 +179,6 @@ exports.login = async (req, res) => {
 
 // Log out user
 exports.logout = (req, res) => {
-  console.log('Logout request');
+  
   res.clearCookie('token').status(200).json({ message: 'Logout successful' });
 };

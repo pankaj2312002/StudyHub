@@ -104,7 +104,3 @@ exports.getNotesbyQuery = async (req, res) => {
     });
   }
 };
-
-
-
-
