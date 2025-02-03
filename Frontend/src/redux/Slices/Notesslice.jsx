@@ -1,6 +1,7 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { baseURL } from "../../Api/api";
 
 
 //notes on 1 tme
@@ -8,7 +9,7 @@ export const fetchNotes = createAsyncThunk('notes/fetchNotes', async (_,{ reject
   
     try {
       
-    const response = await axios.get('http://localhost:4000/api/v1/user/getNotes');
+    const response = await axios.get(`${baseURL}/user/getNotes`);
   
     return response.data.notes; 
     } catch (error) {
@@ -23,7 +24,7 @@ export const fetchNotesBysearchQuery = createAsyncThunk(
   async (searchQuery, { rejectWithValue }) => {
     
       try {
-          const response = await axios.get(`http://localhost:4000/api/v1/user/notes?searchQuery=${searchQuery}`,{ withCredentials: true });
+          const response = await axios.get(`${baseURL}/user/notes?searchQuery=${searchQuery}`,{ withCredentials: true });
           
           return response?.data.notes; 
           
