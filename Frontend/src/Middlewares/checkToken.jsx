@@ -20,5 +20,3 @@ export const checkTokenExpirationMiddleware = (store) => (next) => (action) => {
   
     return next(action);
   };
-
-
