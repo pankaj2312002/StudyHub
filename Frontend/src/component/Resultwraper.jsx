@@ -10,7 +10,7 @@ const NavigationMenu = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { notes, loading, error } = useSelector((state) => state.notes);
+  const { notes = [], loading, error } = useSelector((state) => state.notes);
 
   useEffect(() => {
    
@@ -106,7 +106,7 @@ const NavigationMenu = () => {
             <h1>Sorry Notes Not Found!!!</h1>
           </div>
         )}
-        {!loading && !error && filteredMaterials.length === 0 && (
+        {!loading && !error && (!filteredMaterials || filteredMaterials.length === 0) && (
           <div className='flex justify-center items-center h-full'>
             <h1>No materials found</h1>
           </div>
