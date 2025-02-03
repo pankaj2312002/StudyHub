@@ -7,8 +7,7 @@ import axiosInstance from '../../Api/axiosInstance';
 export const toggleLikeNote = createAsyncThunk(
   'notes/toggleLikeNote',
   async ({ noteId, userLiked }, { rejectWithValue }) => {
-    console.log("noteId =>", noteId);
-    console.log("userLiked =>", userLiked);
+    
     try {
       const response = await axiosInstance.post(
         `auth/notes/toggle-like/${noteId}`, 

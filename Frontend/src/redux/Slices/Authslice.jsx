@@ -9,7 +9,7 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/auth/login', { email, password });
-      console.log("login slice =>", response.data.User)
+      
       return response.data.User;
       
     } catch (error) {

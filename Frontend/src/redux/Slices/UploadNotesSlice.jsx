@@ -7,7 +7,7 @@ import axiosInstance from '../../Api/axiosInstance';
 export const uploadNote = createAsyncThunk(
   'upload/uploadNote',
   async (noteData, { rejectWithValue }) => {
-    console.log(`uploadNote => `, ...noteData);
+    
     try {
       const response = await axiosInstance.post(
         'user/uploadNote',
@@ -18,10 +18,10 @@ export const uploadNote = createAsyncThunk(
           },
         }
       );
-      console.log("newNote =>", response.data.newNote);
+      
       return response.data.newNote; 
     } catch (error) {
-      console.log("upload error =>", error);
+      
       return rejectWithValue(error.response?.data || 'Failed to upload notes');
     }
   }

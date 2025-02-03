@@ -8,7 +8,7 @@ export const forgetPassword = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('auth/forgot-password', { email });
-      console.log("forgetPassword =>",response.data)
+      
       return response.data; 
       
     } catch (error) {
@@ -20,12 +20,10 @@ export const forgetPassword = createAsyncThunk(
 export const resetPassword = createAsyncThunk(
   'password/resetPassword',
   async ({ token, userId, password }, { rejectWithValue }) => {
-    console.log("toekn =>", token)
-         console.log("userId =>",userId)
-         console.log("userId =>",password)
+    
     try {
       const response = await axiosInstance.post(`auth/reset-password/${userId}/${token}`, { password });
-      console.log("resetPassword =>",response.data)
+      
       return response.data; 
     } catch (error) {
       return rejectWithValue(error.response.data.error);

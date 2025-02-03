@@ -44,4 +44,3 @@ const Store = configureStore({
 const persistor = persistStore(Store);
 
 export { Store, persistor };
-
