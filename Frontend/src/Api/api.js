@@ -1,1 +1,1 @@
-export const baseURL = 'https://study-hub-red.vercel.app/api/v1';
+export const baseURL = 'study-hub-backend-beta.vercel.app';
