@@ -7,6 +7,7 @@ import { logout } from '../redux/Slices/Authslice';
 import { toast } from 'react-hot-toast'; 
 
 function Navbar() {
+  // hamburger menu show , open or close 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dispatch = useDispatch();
   
@@ -19,7 +20,7 @@ console.log("user =>", user)
     setIsMenuOpen(!isMenuOpen);
   };
 
-  
+  // close the dropdown menu when the user clicks outside of it.
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest('.dropdown')) {

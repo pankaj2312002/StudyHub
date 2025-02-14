@@ -26,7 +26,7 @@ const forgetPassword = async (req, res) => {
       
 
         // Create reset password link
-        const resetLink = `https://notes-sharing-system12.vercel.app/reset-password/${user._id}/${token}`;
+        const resetLink = `https://study-hub-red.vercel.app/reset-password/${user._id}/${token}`;
         
 
         // Send email with reset link

@@ -25,8 +25,9 @@ const Studymaterialcard = ({ note }) => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const UserID = useSelector((state) => state.auth.user?._id);
-
+  // notes is lliked or note
   const [isLiked, setIsLiked] = useState(likes.includes(UserID));
+  // for counting the likes
   const [count, setCount] = useState(likes.length || 0);
 
   const formatDate = (dateString) => {

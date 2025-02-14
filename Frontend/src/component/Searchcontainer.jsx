@@ -4,24 +4,35 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 import { fetchNotes, fetchNotesBysearchQuery } from '../redux/Slices/Notesslice';
 
-
+// Delays execution of func (API call) until the user stops typing
+// Prevents unnecessary API calls on every keystroke
+// func: The actual function that we want to delay execution for.
 function debounce(func, wait) {
   let timeout;
+  // The function returns a new function that wraps func inside a controlled execution.
   return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
+
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
+
+    timeout = setTimeout(  () => {
+         clearTimeout(timeout);
+         func(...args);
+    }, wait);
+
+  }
 }
 
+
 function Searchcontainer() {
+  // Change input field styling dynamically when it’s active or inactive.
   const [isFocused, setIsFocused] = useState(false);
   const [searchQuery, setsearchQuery] = useState('');
   const dispatch = useDispatch();
-
+  
+// using useCallback hook here
+// handleSearch function re-render hone par naye reference na banaye.
+// calling debounce function
+// dependencies : the function will be re-created only if one of the dependencies changes.
   const handleSearch = useCallback(
     debounce((query) => {
       if (query.trim()) {
@@ -32,10 +43,13 @@ function Searchcontainer() {
     }, 300), 
     [dispatch]
   );
+  // dispatch ko dependency array me nahi rakhta toh bhi koi khass fark nahi padta
+  // Including dispatch ensures that if, for any reason, dispatch is replaced (e.g., due to different Redux store instances in some advanced cases), the function updates accordingly
 
   const handleChange = (e) => {
     const newQuery = e.target.value;
     setsearchQuery(newQuery);
+    // handleSearch ko call karne ka matlab hai debounce ko call karna 
     handleSearch(newQuery);
   };
 
@@ -74,3 +88,14 @@ function Searchcontainer() {
 }
 
 export default Searchcontainer;
+
+
+//  Code Flow Summary:
+// 1.User kuch type karega → handleChange trigger hoga.
+// 2.handleChange → setsearchQuery update karega aur handleSearch call karega.
+// 3.handleSearch debounce ke saath kaam karega:
+//    Agar user typing continue kare to API request cancel hoti rahegi.
+//    Agar user ruk jaye (300ms tak) tab API request jaayegi.
+// 4.Redux action trigger hoga → fetchNotesBysearchQuery(query) call hoga agar query hai.
+// 5.Agar input empty ho jaye to fetchNotes() call hoga jo saare notes fetch karega.
+// 6.Search icon aur styling bhi input ke focus hone par change hoti hai.

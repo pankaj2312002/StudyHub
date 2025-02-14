@@ -4,9 +4,13 @@ import Studymaterialcard from './Studymaterialcard';
 import { fetchNotes } from '../redux/Slices/Notesslice';
 
 const NavigationMenu = () => {
+  // Keeps track of the currently selected filter (default: "All")
   const [activeItem, setActiveItem] = useState('All');
+  // Controls how many notes are displayed initially (default: 5).
   const [visibleNotes, setVisibleNotes] = useState(5);
+  //  Boolean to handle loading state for lazy loading.
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  //  Boolean to toggle dropdown menu of categories (for mobile view).
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const dispatch = useDispatch();
@@ -19,6 +23,8 @@ const NavigationMenu = () => {
 
   const filterOptions = ['All', 'Notes', 'Semester PYQ', 'MidTerm PYQ', 'Practical Files'];
 
+  // notes me saara data ek sath aa gaya hai , ab isko tyahi per category base per filter kar 
+  // no frequent api calls needed
   const filteredMaterials = notes?.filter((material) => {
     switch (activeItem) {
       case 'All': return true;
@@ -45,6 +51,7 @@ const NavigationMenu = () => {
       <div className='text-slate-600 p-4 font-semibold'>
         {/* Mobile view:*/}
         <div className='block sm:hidden'>
+          {/* category select karne ka button */}
           <button
             className='w-full text-left bg-gray-200 p-3 rounded flex justify-between items-center'
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -54,6 +61,7 @@ const NavigationMenu = () => {
               ▼
             </span>
           </button>
+          {/* categories ki list  */}
           {isDropdownOpen && (
             <ul className='mt-2 bg-gray-100 rounded shadow-lg border border-gray-200'>
               {filterOptions.map((item) => (
@@ -111,6 +119,7 @@ const NavigationMenu = () => {
             <h1>No materials found</h1>
           </div>
         )}
+        {/* studymaterialcard compnent rendering */}
         {!loading && !error && filteredMaterials.length > 0 && (
           <div className='grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'>
             {filteredMaterials
