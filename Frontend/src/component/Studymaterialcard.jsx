@@ -19,7 +19,7 @@ const Studymaterialcard = ({ note }) => {
     updatedAt,
     likes,
     _id,
-    file
+    file  // file -->> file means uska cloudinary url
   } = note;
 
   const dispatch = useDispatch();
@@ -30,6 +30,7 @@ const Studymaterialcard = ({ note }) => {
   // for counting the likes
   const [count, setCount] = useState(likes.length || 0);
 
+  // Updated at per jo date show karenge uske liye (kyuki backend se alag format me aayi hai )
   const formatDate = (dateString) => {
     if (!dateString) return 'unknown';
     const date = new Date(dateString);
@@ -50,6 +51,7 @@ const Studymaterialcard = ({ note }) => {
     setIsLiked((prevIsLiked) => {
       const newCount = prevIsLiked ? count - 1 : count + 1;
       setCount(newCount);
+      // Backend update karne ke liye api call / dispatch function from redux
       dispatch(toggleLikeNote({ noteId: _id, userLiked: isLiked }))
         .then((result) => {
           if (result.type.endsWith('/fulfilled')) {
@@ -62,27 +64,40 @@ const Studymaterialcard = ({ note }) => {
     });
   };
 
+
+  // Particular notes ko download karne ke liye 
   const handleDownload = (event) => {
+    // Yeh page reload hone se rokta hai.
     event.preventDefault();
     if (!isAuthenticated) {
       toast.error("Please log in or sign up to download notes.");
       return;
     }
+
+    // Ek <a> tag (link) dynamically create hota hai.
     const link = document.createElement('a');
+    // Us <a> tag ka href file ke URL par set kiya jata hai.
     link.href = file;
+    // Us file ko download ke liye mark kar diya jata hai.
     link.setAttribute('download', file.split('/').pop());
+    // File ko download karne ka process complete karna:
+    // Document me temporary <a> tag add hota hai, uspar click hota hai, fir remove ho jata hai.
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     toast.success('Download started!');
   };
 
+
+  // Particular notes ko preview karne ke liye 
   const handlePreview = (event) => {
+    // Yeh page reload hone se rokta hai.
     event.preventDefault();
     if (!isAuthenticated) {
       toast.error("Please log in or sign up to preview notes.");
       return;
     }
+    // Yeh file ko ek naye tab me open kar deta hai (_blank ka matlab naya tab me open hoga).
     window.open(file, '_blank');
     toast.success('Opening preview...');
   };
@@ -153,3 +168,28 @@ const Studymaterialcard = ({ note }) => {
 };
 
 export default Studymaterialcard;
+
+
+// Download Process:
+
+// Ek <a> tag (link) dynamically create hota hai.
+// const link = document.createElement('a');
+
+// Us <a> tag ka href file ke URL par set kiya jata hai.
+// link.href = file;
+
+// Us file ko download ke liye mark kar diya jata hai.
+// link.setAttribute('download', file.split('/').pop());
+// file.split('/').pop() ka matlab hai ki sirf filename extract ho jaye, na ki pura URL.
+
+// File ko download karne ka process complete karna:
+// Document me temporary <a> tag add hota hai, uspar click hota hai, fir remove ho jata hai.
+// document.body.appendChild(link);
+// link.click();
+// document.body.removeChild(link);
+
+
+// file.split('/').pop() ka matlab hai ki sirf filename extract ho jaye, na ki pura URL.
+// Agar file "https://example.com/notes.pdf" hai, toh:
+// Yeh "notes.pdf" ko naye tab me open kar dega.
+

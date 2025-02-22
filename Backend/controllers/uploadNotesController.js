@@ -7,32 +7,25 @@ const { deleteFromCloudinary, extractPublicIdFromUrl } = require("../utilityFile
 
 // uploade note
 exports.uploadNote = async (req, res) => {
-
   try {
-    if (!req.file) {
-      
+
+    if (!req.file) {  
       return res.status(400).json({ message: 'No file uploaded.' });
     }
-
-   
-
+    
     const { subject, forClass, unit, semester, fileSize, documentType } = req.body;
     const uploadedBy = req.user?.id;
     const fileType = req.file?.originalname.split('.')[1];
    
-
     // Pass the buffer directly to Cloudinary for upload
     const cloudinaryResponse = await uploadOnCloudinary(req.file.buffer, req.file.originalname); // Change to req.file.buffer
     
-
-    if (!cloudinaryResponse) {
-      
+    if (!cloudinaryResponse) { 
       return res.status(500).json({ message: 'File upload to Cloudinary failed.' });
     }
 
-    
+    // Ab cloudinary se url leke apne ko DB me save karwana hai...
     const fileUrl = cloudinaryResponse.url;
-
     
     let modifiedFileUrl = fileUrl;
 
@@ -41,10 +34,10 @@ exports.uploadNote = async (req, res) => {
       console.log("Directly open PDF:", fileUrl);
     } else {
       // For non-PDF files, use Google Docs Viewer
-      modifiedFileUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
-      
+      modifiedFileUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;      
     }
    
+    // Now create entry in DB...
     const newNote = new NotesModel({
       subject,
       forClass,
@@ -59,7 +52,7 @@ exports.uploadNote = async (req, res) => {
 
     await newNote.save();
     
-    
+    // send response
     return res.status(201).json({
       message: 'Note uploaded successfully!',
       newNote,
@@ -79,42 +72,45 @@ exports.uploadNote = async (req, res) => {
 ///deleteNotes
 
 exports.deleteNote = async (req, res) => {
+
   try {
-   
-    console.log("entering into deleteNote")
-    const note = await NotesModel.findById(req.params.id);
-  
-    if (!note) {
-      
+
+    const noteId =  req.params.id
+
+    const note = await NotesModel.findById(noteId);
+
+    // Agar particular note DB me available hi na ho...
+    if (!note) {      
       return res.status(404).json({ success: false, msg: 'Note not found or deleted before' });
     }
 
-  
-    if (note.uploadedBy.toString() !== req.user.id) {
-      
+    // If that particular note is not uploaded by requesting user...
+    if (note.uploadedBy.toString() !== req.user.id) {      
       return res.status(401).json({ success: false, msg: 'Not authorized' });
     }
-
-
    
-    const publicId = extractPublicIdFromUrl(note.file);
+  // DB se particular note ka URL nikal lete hai...
+  // And us URL se publicId nikal lenge...
+   const publicId = extractPublicIdFromUrl(note.file);
+
    console.log("publicId of file =>", publicId)
     if (!publicId) {
       return res.status(500).json({ success: false, msg: 'Error extracting file ID' });
     }
 
-
+    // Noe delete from cloudinary
     const deleteResponse = await deleteFromCloudinary(publicId);
+
     console.log("deleteResponse =>", deleteResponse)
     if (!deleteResponse) {
       return res.status(500).json({ success: false, msg: 'Failed to delete file from Cloudinary' });
-    }
-   
+    } 
 
-    await NotesModel.findByIdAndDelete(req.params.id);
+    // Now , delete from database
+    await NotesModel.findByIdAndDelete(noteId);
     console.log("succesfully delete from db")
-
-  
+    
+    // send response...
     res.status(200).json({
       success: true,
       message: 'Note deleted successfully',

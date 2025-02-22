@@ -33,12 +33,14 @@ exports.SignUp = async (req, res) => {
     let user = await findUser(email);
 
     if (user) {
+      // Agar status pending hai toh {otp, otpExpiry } generate karwa ke user ke document me save karwa do 
+      // And mail bhej do (otp ka )
       if (user.status === 'pending') {
         const { otp, otpExpiry } = generateOtp();
         user.otp = otp;
         user.otpExpiry = otpExpiry;
         await user.save();
-        await sendOtpEmail(email, otp);
+        await sendOtpEmail(email, otp);  //email-->> user ka email-id 
         return res.status(200).json({
           success: true,
           message: 'User already exists in the signup process, OTP resent. Please check your email.',
@@ -47,7 +49,8 @@ exports.SignUp = async (req, res) => {
       }
       return res.status(400).json({ success: false, message: 'User already exists' });
     }
-
+    
+    // Agar user abhi tak bana nahi hai toh banao pahle -->>
     const hashedPassword = await bcrypt.hash(password, 10);
     const { otp, otpExpiry } = generateOtp();
 
@@ -62,6 +65,7 @@ exports.SignUp = async (req, res) => {
       status: 'pending',
     });
     await user.save();
+    // ab otp bhej do mail per 
     await sendOtpEmail(email, otp);
 
     res.status(201).json({
@@ -80,21 +84,28 @@ exports.verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
   
   try {
+    // Agar user ka status pending nahi hai ...
     const user = await findUser(email);
     if (!user || user.status !== 'pending') {
       return res.status(400).json({ success: false, message: 'Invalid request' });
     }
 
+    // Agar incoming otp , user.otp ke equal nahi ho toh ...
     if (user.otp !== otp || user.otpExpiry < Date.now()) {
       return res.status(400).json({ success: false, message: 'Invalid OTP. Try with a new OTP.' });
     }
 
+    // Ab agar otp verify ho gaya (means otp === user.otp ) , toh...  
     user.isVerified = true;
+    user.status = 'verified';
+    // (otp , otpExpiry) ko undefined set kar do
     user.otp = undefined;
     user.otpExpiry = undefined;
-    user.status = 'verified';
+    
     await user.save();
 
+
+    // now token , cookies and all ....
     const { password, ...userData } = user.toObject();
     const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: '15d' });
 
@@ -112,16 +123,16 @@ exports.resendOtp = async (req, res) => {
   
   try {
     const user = await findUser(email);
+    // Agar user hi naaa mile ...
     if (!user) {
       return res.status(400).json({ success: false, message: 'User not found' });
     }
-
+    // agar user ka status (verified ho)...
     if (user.status !== 'pending' && user.status !== 'inactive') {
       return res.status(400).json({ success: false, message: 'Cannot resend OTP, user is not eligible' });
     }
 
-    
-
+    // Agar user ka status (pending ya inactive ho)...
     const { otp, otpExpiry } = generateOtp();
     user.otp = otp;
     user.otpExpiry = otpExpiry;

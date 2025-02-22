@@ -1,20 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { signupUser, resetAuthState } from '../redux/Slices/Authslice';
-import { useNavigate, Link } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import ClipLoader from 'react-spinners/ClipLoader';
-import { FaUser, FaBuilding, FaCalendar, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { signupUser, resetAuthState } from "../redux/Slices/Authslice";
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import ClipLoader from "react-spinners/ClipLoader";
+import {
+  FaUser,
+  FaBuilding,
+  FaCalendar,
+  FaEnvelope,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+} from "react-icons/fa";
 
-import svgBackground from '../Images/signin.58ee1d5a.svg';
+import svgBackground from "../Images/signin.58ee1d5a.svg";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
-    username: '',
-    branch: '',
-    year: '',
-    email: '',
-    password: '',
+    username: "",
+    branch: "",
+    year: "",
+    email: "",
+    password: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -44,8 +52,8 @@ const Signup = () => {
 
   useEffect(() => {
     if (success) {
-      toast.success('Check your email for OTP verification.');
-      navigate('/OtpVerification');
+      toast.success("Check your email for OTP verification.");
+      navigate("/OtpVerification");
     }
     if (error) {
       toast.error(error);
@@ -60,13 +68,15 @@ const Signup = () => {
       className="flex justify-center items-center min-h-screen bg-slate-50"
       style={{
         backgroundImage: `url(${svgBackground})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md lg:max-w-lg mx-4">
-        <h2 className="text-2xl font-semibold text-center mb-4 sm:mb-6">Create an account</h2>
+        <h2 className="text-2xl font-semibold text-center mb-4 sm:mb-6">
+          Create an account
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <FormField
@@ -118,7 +128,7 @@ const Signup = () => {
           <FormField
             label="Password"
             name="password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             icon={<FaLock className="text-gray-400" />}
             value={formData.password}
@@ -131,15 +141,28 @@ const Signup = () => {
 
           <button
             type="submit"
-            className={`w-full py-2 px-4 rounded-md text-white transition ${loading ? 'bg-gray-400' : 'bg-black'}`}
+            className={`w-full py-2 px-4 rounded-md text-white transition ${
+              loading ? "bg-gray-400" : "bg-black"
+            }`}
             disabled={loading}
           >
-            {loading ? <ClipLoader size={20} color="#ffffff" className="inline-block mr-2" /> : 'Sign Up'}
+            {loading ? (
+              <ClipLoader
+                size={20}
+                color="#ffffff"
+                className="inline-block mr-2"
+              />
+            ) : (
+              "Sign Up"
+            )}
           </button>
         </form>
 
         <p className="text-center mt-4">
-          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login here</Link>
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 hover:underline">
+            Login here
+          </Link>
         </p>
       </div>
     </div>
@@ -160,7 +183,9 @@ const FormField = ({
   togglePasswordVisibility,
 }) => (
   <div className="relative">
-    <label htmlFor={name} className="block text-sm font-medium text-gray-700">{label}</label>
+    <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+      {label}
+    </label>
     <div className="flex items-center mt-1">
       {icon && <span className="absolute left-3">{icon}</span>}
       <input

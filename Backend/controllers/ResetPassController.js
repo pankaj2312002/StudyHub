@@ -16,8 +16,7 @@ const forgetPassword = async (req, res) => {
     try {
         // Verify user exists
         const user = await UserModel.findOne({ email });
-        if (!user) {
-            
+        if (!user) {     
             return res.status(404).json({ error: 'User not found' });
         }
 
@@ -39,6 +38,9 @@ const forgetPassword = async (req, res) => {
         return res.status(500).json({ error: 'An error occurred. Please try again later.' });
     }
 };
+
+// forgetPassword controller toh bas frontend ko ek link send karne ka kaam karega 
+// us link per click karne aur password fill karne ke baad resetPassword ke pass ayegi request 
 
 // Reset password controller
 const resetPassword = async (req, res) => {

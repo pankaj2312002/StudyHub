@@ -1,8 +1,4 @@
-
-
-
 const NotesModel = require('../models/notes');
-
 
 
 //get all notes
@@ -12,8 +8,7 @@ exports.getNotes = async (req, res) => {
     const notes = await NotesModel.find()
                                   .populate('uploadedBy', 'username') 
                                   .sort({ updatedAt: -1 })
-                                  .lean(); 
-
+                                  .lean(); // Converts Mongoose documents to plain JavaScript objects for better performance.
    
     if (!notes.length) {
       return res.status(404).json({
@@ -21,18 +16,16 @@ exports.getNotes = async (req, res) => {
         message: "No notes found"
       });
     }
-
-    
+    // send response 
     res.status(200).json({
       success: true,
       notes,
       message: "Notes fetched successfully"
     });
-
-  } catch (err) {
+  }
+  catch (err) {
     console.error("Error fetching notes:", err.message);
-
-   
+    // Send response  
     res.status(500).json({
       success: false,
       error: 'Server error while fetching notes',
@@ -59,6 +52,8 @@ exports.getNotesbyQuery = async (req, res) => {
       });
     }
 
+    // Using Regular Expression (RegExp) to make the search case-insensitive ('i' flag)
+    // Searching for "math" will match "Math", "MATH", "Mathematics", etc
     const regex = new RegExp(searchQuery, 'i'); 
 
     // Find notes matching the subject
@@ -70,15 +65,16 @@ exports.getNotesbyQuery = async (req, res) => {
     const notesByUser = await NotesModel.find()
       .populate({
         path: 'uploadedBy',
-        match: { username: { $regex: regex } }, 
+        match: { username: { $regex: regex } }, // Uses $regex to allow partial matches.
         select: 'username', 
       })
       .lean();
 
-   
+    // Some notes might have uploadedBy = null (if the uploader didn’t match the search)
     const filteredNotesByUser = notesByUser.filter(note => note.uploadedBy);
-
-  
+    
+    // Combines notesBySubject and filteredNotesByUser into one array.
+    // Sorts them in descending order of uploadedOn (newest first).  
     const finalResult = [...notesBySubject, ...filteredNotesByUser]
       .sort((a, b) => new Date(b.uploadedOn) - new Date(a.updatedAt)); 
 
@@ -104,3 +100,12 @@ exports.getNotesbyQuery = async (req, res) => {
     });
   }
 };
+
+// 	.lean()
+//   Directly on a Mongoose query (  find(), findOne()  )
+//   Model.find().lean()
+
+// 	.toObject()
+//  On an already retrieved document
+// const doc = await Model.findOne();
+//  doc.toObject();

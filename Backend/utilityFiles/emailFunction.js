@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 const sendEmail = async ({ to, subject, htmlContent }) => {
     try {
         const transporter = nodemailer.createTransport({
-            host: process.env.MAIL_HOST,
+            host: process.env.MAIL_HOST,  //smtp.gmail.com
             service: 'Gmail',
             auth: {
                 user: process.env.MAIL_USER,
@@ -46,8 +46,8 @@ const sendOtpEmail = async (email, otp) => {
   `;
 
     const response = await sendEmail({
-        to: email,
-        subject: '🔒 Your OTP Verification Code',
+        to: email,  // ye email user ka hoga , jo input ayega , jaha se bhi is function ko call ho raha hai
+        subject: ' Your OTP Verification Code',
         htmlContent,
     });
 
@@ -73,7 +73,7 @@ const sendPasswordResetEmail = async (email, resetLink) => {
 
     const response = await sendEmail({
         to: email,
-        subject: '🔒 Reset Your Password',
+        subject: ' Reset Your Password',
         htmlContent,
     });
 
