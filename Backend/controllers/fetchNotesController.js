@@ -76,7 +76,7 @@ exports.getNotesbyQuery = async (req, res) => {
     // Combines notesBySubject and filteredNotesByUser into one array.
     // Sorts them in descending order of uploadedOn (newest first).  
     const finalResult = [...notesBySubject, ...filteredNotesByUser]
-      .sort((a, b) => new Date(b.uploadedOn) - new Date(a.updatedAt)); 
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); 
 
   
     if (finalResult.length === 0) {
